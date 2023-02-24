@@ -1,0 +1,31 @@
+pr:
+  branches:
+    include: 
+    - main
+
+parameters:
+  - name: branch
+    type: string
+    default: 'main'
+  - name: environment
+    type: string
+    default: 'dev'
+
+jobs:
+  - job: build
+    displayName: 'Build and Test'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - script: git --version
+          
+        displayName: 'Build and Test'
+
+  - job: deploy
+    displayName: 'Deploy to $(environment)'
+    dependsOn: build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/$(branch)'))
+    steps:
+      - script: echo 'Deploying the code to $(environment)...'
+        displayName: 'Deploy to $(environment)'
+# Test from TestAzurePipeline
